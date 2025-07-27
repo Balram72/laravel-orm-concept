@@ -50,8 +50,7 @@ class UserController extends Controller
 
         // use the First method (show the data in first)
             // $users = User::whereCity('Delhi')->first();
-            // return $users;    
-
+            // return $users;
 
         // use the Not operator
              // $users = User::where('Age','<>',31)->get();
@@ -66,10 +65,9 @@ class UserController extends Controller
             // $users = User::whereIn('city',['Surat','Delhi'])->get();
         // use the WhereNotIn method
             // $users = User::whereNotIn('city',['Surat','Delhi'])->get();
-            
+
         $users = User::all();
-        return view('welcome', compact('users'));
-    
+        return view('home', compact('users'));
     }
 
     /**
@@ -77,7 +75,8 @@ class UserController extends Controller
      */
     public function create()
     {
-        //
+        return view('adduser');
+
     }
 
     /**
@@ -85,15 +84,51 @@ class UserController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $validate = $request->validate([
+            'name' => 'required |string |max:16',
+            'email' => 'required |email',
+            'city' => 'required |string',
+            'age' => 'required |integer'
+        ],[
+            'name.required' => 'Please enter your User Name is required !',
+            'name.string' => 'Please enter User Name Character Only !',
+            'name.max' => 'Please enter max 16 character Only !',
+            'email.required' => 'Please enter your User Email is required!',
+            'email.email' => 'Please enter your valid User Email !',
+            'city.required' => 'Please enter your City !',
+            'city.string' => 'Please enter City Name is Character Only !',
+            'age.required' => 'Please enter your Age is required!',
+            'age.integer' => 'Please enter Age is Integer Only !',
+        ]);
+
+       // use the method one 
+            // $user = new User();
+            // $user->name = $request->name;
+            // $user->email = $request->email;
+            // $user->city = $request->city;
+            // $user->age = $request->age;
+            // $user->save();
+
+        // use the method two (mass assignment)
+            $user = User::create([
+                'name' => $request->name,
+                'email' => $request->email,
+                'city' => $request->city,
+                'age' => $request->age
+            ]);
+
+       return redirect()->route('user.index')->with('status','New User Added Successfully !');
+
     }
 
     /**
      * Display the specified resource.
      */
-    public function show(User $user)
+    public function show($id)
     {
-        //
+        $users = User::find($id);
+        return view('viewuser',compact('users'));
+
     }
 
     /**
@@ -101,7 +136,7 @@ class UserController extends Controller
      */
     public function edit(User $user)
     {
-        //
+         return view('uodateuser');
     }
 
     /**
