@@ -25,19 +25,28 @@
     </thead>
     <tbody>
         @php $i = 1;@endphp
-        @foreach ($users as $users)
+        @foreach ($users as $user)
             <tr>
               <td>{{ $i++ }}</td>
-              <td>{{ $users->name}}</td>
-              <td>{{ $users->email}}</td>
-              <td>{{ $users->age}}</td>
-              <td>{{ $users->city}}</td>
-              <td><a href="{{route('user.show',$users->id)}}" class="btn btn-primary btn-sm">View</a></td>
-              <td><a href="{{route('user.edit',$users->id)}}" class="btn btn-warning btn-sm">Update</a></td>
-              <td><a href="" class="btn btn-danger btn-sm">Delete</a></td>
+              <td>{{ $user->name}}</td>
+              <td>{{ $user->email}}</td>
+              <td>{{ $user->age}}</td>
+              <td>{{ $user->city}}</td>
+              <td><a href="{{route('user.show',$user->id)}}" class="btn btn-primary btn-sm">View</a></td>
+              <td><a href="{{route('user.edit',$user->id)}}" class="btn btn-warning btn-sm">Update</a></td>
+              <td>
+                <form action="{{route('user.destroy',$user->id)}}" method="POST">
+                    @csrf
+                    @method('DELETE')
+                    <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+                </form>
+             </td>
             </tr>   
         @endforeach
     </tbody>
 </table>
+<div class="mt-4">
+    {{ $users->links() }}
+</div>
 @endsection
 

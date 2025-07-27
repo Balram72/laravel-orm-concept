@@ -66,7 +66,7 @@ class UserController extends Controller
         // use the WhereNotIn method
             // $users = User::whereNotIn('city',['Surat','Delhi'])->get();
 
-        $users = User::all();
+        $users = User::simplepaginate(4); //-> use the simplepaginate method
         return view('home', compact('users'));
     }
 
@@ -88,7 +88,7 @@ class UserController extends Controller
             'name' => 'required |string |max:16',
             'email' => 'required |email',
             'city' => 'required |string',
-            'age' => 'required |integer'
+            'age' => 'required |numeric'
         ],[
             'name.required' => 'Please enter your User Name is required !',
             'name.string' => 'Please enter User Name Character Only !',
@@ -98,7 +98,7 @@ class UserController extends Controller
             'city.required' => 'Please enter your City !',
             'city.string' => 'Please enter City Name is Character Only !',
             'age.required' => 'Please enter your Age is required!',
-            'age.integer' => 'Please enter Age is Integer Only !',
+            'age.integer' => 'Please enter Age is numeric Only !',
         ]);
 
        // use the method one 
@@ -136,22 +136,75 @@ class UserController extends Controller
      */
     public function edit(User $user)
     {
-         return view('uodateuser');
+        $users = User::find($user->id);
+         return view('updateuser',compact('users'));
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, User $user)
+    public function update(Request $request,$id)
     {
-        //
+       $validate = $request->validate([
+            'name' => 'required |string | max:16',
+            'email' => 'required |email',
+            'city' => 'required |string',
+            'age' => 'required |numeric'
+        ],[
+            'name.required' => 'Please enter your User Name is required !',
+            'name.string' => 'Please enter User Name Character Only !',
+            'name.max' => 'Please enter max 16 character Only !',
+            'email.required' => 'Please enter your User Email is required!',
+            'email.email' => 'Please enter your valid User Email !',
+            'city.required' => 'Please enter your City !',
+            'city.string' => 'Please enter City Name is Character Only !',
+            'age.required' => 'Please enter your Age is required!',
+            'age.integer' => 'Please enter Age is Numeric Only !',
+        ]);
+
+        // use the method one
+
+            // $user = User::find($id); 
+            // $user->name = $request->name;
+            // $user->email = $request->email;
+            // $user->city = $request->city;
+            // $user->age = $request->age;
+            // $user->save();
+        
+        // use the method two (mass assignment)
+            $user = User::whereId($id)
+                ->update([
+                    'name' => $request->name,
+                    'email' => $request->email,
+                    'city' => $request->city,
+                    'age' => $request->age
+            ]);
+
+            return redirect()->route('user.index')->with('status','User Updated Successfully !');
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(User $user)
+    public function destroy($id)
     {
-        //
+        
+        // use the method One
+            $user = User::find($id);
+            $user->delete();
+        
+        // use the Where method
+            // User::where('email','rani@gmail.com')->delete();
+        // use the method two
+            // User::destroy($id);
+        //delete multiple data
+            // User::destroy([7,8]);
+            //User::destroy(7,8);
+
+        // use the truncate method
+            // User::truncate(); -> delete all data
+
+        return redirect()->route('user.index')->with('status','User Data Deleted Successfully !');
+
     }
 }
